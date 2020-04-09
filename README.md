@@ -1,4 +1,7 @@
-Gnofract 4D GIT CVS Conversion, Reworking and Rewriting Scripts
-===============================================================
+# Fract 4D Repository Reorganisation Helpers
 
-This repository contains a set of scripts that were used automate the conversion the old CVS repository to Git, reworking and rebaseing, and rewriting history.
+### Scripts Automating:
+* Conversion of historical cvs repository to git.
+* Rebasing modern repository on-top of converted historical repository.
+* Rewriting history, correcting names and email addresses.
+* Extracting: Website; Documentation (manual); and Library (colour maps and formulas), into new repository while keeping history.

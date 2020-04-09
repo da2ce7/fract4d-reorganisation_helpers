@@ -1,21 +1,23 @@
 #!/bin/sh
-# This script creates new git checkout of the cvs-to-git output, and removes the files that that were not included in the modern git repo.
+# This script:
+#	Creates a temporary repository that contains the newly converted cvs-to-git version.
+#	Removes the files that were never included in the modern git repository.
 
 # Debug Mode
 set -x
 set -e
 
-if [ ! -d "./gnofract4d_reposurgeon/gnofract4d-git/" ]; then
-        echo "canot find './gnofract4d_reposurgeon/gnofract4d-git/' folder"
+if [ ! -d "./ref/gnofract4d_reposurgeon/gnofract4d-git/.git" ]; then
+	echo "canot find './ref/gnofract4d_reposurgeon/gnofract4d-git/.git' folder"
 	exit 1
 fi
 
-rm -rf gnofract4d_git_cvs
-mkdir gnofract4d_git_cvs
-cd gnofract4d_git_cvs
+rm -rf temp/gnofract4d_git_cvs
+mkdir -p temp/gnofract4d_git_cvs
+cd temp/gnofract4d_git_cvs
 
 git init
-git remote add cvs_reposurgeon_origin ../gnofract4d_reposurgeon/gnofract4d-git/
+git remote add cvs_reposurgeon_origin ../../ref/gnofract4d_reposurgeon/gnofract4d-git/
 
 git fetch --all
 

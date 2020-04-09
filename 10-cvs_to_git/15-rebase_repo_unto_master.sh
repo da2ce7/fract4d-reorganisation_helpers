@@ -1,16 +1,18 @@
 #!/bin/sh
-# This script rebases the modern Git repo onto the converted CVS to Git repo, and rewrites the committer to be the same as the author.
+# This script:
+#	Rebases the modern Git repo onto the converted CVS to Git repo
+#	Rewrites the committer to be the same as the author.
 
 # Debug Mode
 set -x
-#set -e
+set -e
 
-if [ ! -d "./gnofract4d_rebase/.git" ]; then
-	echo "canot find './gnofract4d_rebase/.git' folder"
+if [ ! -d "./temp/gnofract4d_rebase/.git" ]; then
+	echo "canot find './temp/gnofract4d_rebase/.git' folder"
 	exit 1
 fi
 
-cd gnofract4d_rebase
+cd temp/gnofract4d_rebase
 
 git switch --force-create rebase_master git_modern_master
 
@@ -20,6 +22,9 @@ git switch --force-create rebase_master git_modern_master
 
 # In particular, some time information, and the committer "GitHub <noreply@github.com>" will be lost.
 # However, personally, I (Cameron) think it is worth the cost as it gives a much more clear history of the changes.
+
+# Skip Errors
+set +e
 
 git rebase --root --no-keep-empty --strategy-option=patience --strategy-option=diff-algorithm=histogram --strategy-option=renormalize --rebase-merges=rebase-cousins --onto git_cvs_master
 
@@ -74,6 +79,8 @@ git checkout 7a7d7aa3 -- README
 #git commit --no-edit
 git rebase --continue
 
+# Enabe Errors
+set -e
 
 # Finished Rebase, now rewrite the committer author, email, and times.
 
@@ -81,10 +88,10 @@ git rebase --continue
 # For almost all of the commits this is the same as it used to be prior to the rebase.
 
 git filter-repo --commit-callback '
-  commit.committer_name  = commit.author_name
-  commit.committer_email = commit.author_email
-  commit.committer_date  = commit.author_date
-  ' --force
+commit.committer_name  = commit.author_name
+commit.committer_email = commit.author_email
+commit.committer_date  = commit.author_date
+' --force
 
 
 #DONE!

@@ -1,28 +1,30 @@
 #!/bin/sh
-# This script creates a new git repo where the modern git repo and updated converted cvs repo are both added as remotes and branches.
+# This script:
+#	Creates a temporary repository that contains both the original git version, and the newly converted cvs-to-git version.
+#	Create branches ready for rebase.
 
 # Debug Mode
 set -x
 set -e
 
-if [ ! -d "./gnofract4d_git_modern/.git" ]; then
+if [ ! -d "./ref/gnofract4d_git_modern/.git" ]; then
 	echo "canot find './gnofract4d_git_modern/.git' folder"
 	exit 1
 fi
 
 
-if [ ! -d "./gnofract4d_git_cvs/.git" ]; then
+if [ ! -d "./temp/gnofract4d_git_cvs/.git" ]; then
 	echo "canot find './gnofract4d_git_cvs/git' folder"
 	exit 1
 fi
 
-rm -rf gnofract4d_rebase
-mkdir gnofract4d_rebase
-cd gnofract4d_rebase
+rm -rf temp/gnofract4d_rebase
+mkdir -p temp/gnofract4d_rebase
+cd temp/gnofract4d_rebase
 
 git init
 git remote add git_cvs_origin ../gnofract4d_git_cvs/
-git remote add git_modern_origin ../gnofract4d_git_modern/
+git remote add git_modern_origin ../../ref/gnofract4d_git_modern/
 
 git fetch --all
 
