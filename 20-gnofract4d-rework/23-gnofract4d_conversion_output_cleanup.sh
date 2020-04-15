@@ -3,25 +3,26 @@
 #	Creates a temporary repository that contains the newly converted cvs-to-git version.
 #	Removes the files that were never included in the modern git repository.
 
+# A better class of script...
+set -o errexit          # Exit on most errors (see the manual)
+set -o errtrace         # Make sure any error trap is inherited
+set -o nounset          # Disallow expansion of unset variables
+set -o pipefail         # Use last non-zero exit code in a pipeline
+
+
 # Debug Mode
 set -x
 set -e
 
-if [ ! -d "./ref/gnofract4d_reposurgeon/gnofract4d-git/.git" ]; then
-	echo "canot find './ref/gnofract4d_reposurgeon/gnofract4d-git/.git' folder"
+if [[ -z ${conversion_output_cleanup_dir+x} ]]; then echo "Error: 'conversion_output_cleanup_dir' is unset."; exit 1; fi
+
+# check if we have git repo to use:
+if [[ ! -d "./${conversion_output_cleanup_dir}/.git" ]]; then
+	echo "canot find './${conversion_output_cleanup_dir}/.git' folder"
 	exit 1
 fi
 
-rm -rf temp/gnofract4d_git_cvs
-mkdir -p temp/gnofract4d_git_cvs
-cd temp/gnofract4d_git_cvs
-
-git init
-git remote add cvs_reposurgeon_origin ../../ref/gnofract4d_reposurgeon/gnofract4d-git/
-
-git fetch --all
-
-git switch --create git_cvs_master cvs_reposurgeon_origin/master
+cd ${conversion_output_cleanup_dir}
 
 # remove elephant_valley folder
 git rm --cached -r elephant-valley/

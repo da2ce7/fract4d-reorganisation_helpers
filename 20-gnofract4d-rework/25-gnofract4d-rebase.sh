@@ -3,18 +3,28 @@
 #	Rebases the modern Git repo onto the converted CVS to Git repo
 #	Rewrites the committer to be the same as the author.
 
+# A better class of script...
+set -o errexit          # Exit on most errors (see the manual)
+set -o errtrace         # Make sure any error trap is inherited
+set -o nounset          # Disallow expansion of unset variables
+set -o pipefail         # Use last non-zero exit code in a pipeline
+
+
 # Debug Mode
 set -x
 set -e
 
-if [ ! -d "./temp/gnofract4d_rebase/.git" ]; then
-	echo "canot find './temp/gnofract4d_rebase/.git' folder"
-	exit 1
-fi
+if [[ -z ${rebase_top_branch+x} ]];  then echo "Error: 'rebase_top_branch' is unset. "; exit 1; fi
+if [[ -z ${rebase_base_branch+x} ]]; then echo "Error: 'rebase_base_branch' is unset."; exit 1; fi
+if [[ -z ${rebase_repo_dir+x} ]];    then echo "Error: 'rebase_repo_dir' is unset.   "; exit 1; fi
+if [[ -z ${rebase_branch+x} ]];      then echo "Error: 'rebase_branch' is unset.     "; exit 1; fi
 
-cd temp/gnofract4d_rebase
+if [[ ! -d "./${rebase_repo_dir}/.git" ]]; then echo "canot find './${rebase_repo_dir}/.git' folder"; exit 1; fi
 
-git switch --force-create rebase_master git_modern_master
+cd ${rebase_repo_dir}
+
+# switch to new branch for rebase
+git switch --force-create "${rebase_branch}" "${rebase_top_branch}"
 
 # Do Rebase
 
@@ -26,7 +36,7 @@ git switch --force-create rebase_master git_modern_master
 # Skip Errors
 set +e
 
-git rebase --root --no-keep-empty --strategy-option=patience --strategy-option=diff-algorithm=histogram --strategy-option=renormalize --rebase-merges=rebase-cousins --onto git_cvs_master
+git rebase --root --no-keep-empty --strategy-option=patience --strategy-option=diff-algorithm=histogram --strategy-option=renormalize --rebase-merges=rebase-cousins --onto ${rebase_base_branch}
 
 # b30d2c71... initial checkin
 git rebase --skip
@@ -79,20 +89,10 @@ git checkout 7a7d7aa3 -- README
 #git commit --no-edit
 git rebase --continue
 
-# Enabe Errors
+# Enable Errors
 set -e
 
-# Finished Rebase, now rewrite the committer author, email, and times.
-
-# This operation will set the committer to be identical to the author.
-# For almost all of the commits this is the same as it used to be prior to the rebase.
-
-git filter-repo --commit-callback '
-commit.committer_name  = commit.author_name
-commit.committer_email = commit.author_email
-commit.committer_date  = commit.author_date
-' --force
-
+# Finished Rebase.
 
 #DONE!
 
