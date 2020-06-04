@@ -31,8 +31,8 @@ set +e
 
 git rebase --root --no-keep-empty --strategy-option=patience --strategy-option=diff-algorithm=histogram --strategy-option=renormalize --rebase-merges=rebase-cousins --onto ${rebase_base_branch}
 
-# 24db4c6... python3 # Merge branch 'python3' of https://github.com/edyoung/gnofract4d into python3
-git checkout 24db4c6 manual/gnofract4d-manual.xml
+# fe5c88d... python3 # Merge branch 'python3' of https://github.com/edyoung/gnofract4d into python3
+git checkout fe5c88d manual/gnofract4d-manual.xml
 git rebase --continue
 
 # Enable Errors
